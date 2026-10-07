@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cardiovascular Disease Detection</title>
+
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background:
+        linear-gradient(rgba(244,247,251,0.95), rgba(244,247,251,0.95)),
+        url("https://www.transparenttextures.com/patterns/heartbeat.png");
+}
+
+header {
+    background: linear-gradient(135deg, #0b3c5d, #1e6fa1);
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+.main {
+    flex: 1;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 30px;
+}
+
+.upload-box, .result-box {
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.preview-img {
+    width: 320px;
+    height: 220px;
+    border-radius: 12px;
+    border: 3px solid #1e6fa1;
+    object-fit: contain;
+    background: #f7f9fc;
+    margin: 20px auto;
+    display: none;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.choose-btn {
+    display: inline-block;
+    background: #1e6fa1;
+    color: white;
+    padding: 14px 35px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.choose-btn:hover {
+    background: #0b3c5d;
+}
+
+.predict-btn {
+    display: none;
+    background: linear-gradient(270deg, #0b3c5d, #1e6fa1);
+    color: white;
+    border: none;
+    padding: 16px 45px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 40px;
+    margin-top: 20px;
+}
+
+.result-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0b3c5d;
+    text-align: left;
+}
+
+.reason-text {
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.suggestions-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: #eef5ff;
+    border-left: 5px solid #1e6fa1;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.suggestions-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #0b3c5d;
+}
+
+.suggestions-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-line;
+}
+
+footer {
+    background: #0b3c5d;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Cardiovascular Disease Detection System</h1>
+    <p>Myocardial Infarction | Arrhythmia | History of MI | Normal</p>
+</header>
+
+<div class="main">
+<div class="container">
+
+    <div class="upload-box">
+        <h2>Upload ECG Image</h2>
+
+        <img id="previewImage" class="preview-img">
+
+        <form method="POST" enctype="multipart/form-data">
+            <label for="imageUpload" class="choose-btn">Choose ECG Image</label>
+            <input id="imageUpload" type="file" name="image" accept="image/*" required>
+            <br>
+            <button id="predictBtn" class="predict-btn" type="submit">Predict</button>
+        </form>
+    </div>
+
+    {% if result %}
+    <div class="result-box">
+
+        <img id="resultImage" class="preview-img" style="display:block">
+
+        <div class="result-title">
+            Predicted Result: {{ result }}
+        </div>
+
+        <div class="reason-text">
+            <strong>Reason:</strong><br>
+            {{ reason }}
+        </div>
+
+        <!-- ⭐ ADDED SUGGESTIONS SECTION ⭐ -->
+        {% if suggestions %}
+        <div class="suggestions-box">
+            <h3>Suggested Next Steps</h3>
+            <div class="suggestions-text">
+                {{ suggestions }}
+            </div>
+        </div>
+        {% endif %}
+        <!-- ⭐ END SUGGESTIONS SECTION ⭐ -->
+
+    </div>
+    {% endif %}
+
+</div>
+</div>
+
+<footer>
+    Cardiovascular Disease Prediction
+</footer>
+
+<script>
+const input = document.getElementById("imageUpload");
+const preview = document.getElementById("previewImage");
+const predictBtn = document.getElementById("predictBtn");
+
+input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        localStorage.setItem("ecgImage", reader.result);
+        preview.src = reader.result;
+        preview.style.display = "block";
+        predictBtn.style.display = "inline-block";
+    };
+    reader.readAsDataURL(file);
+});
+
+window.onload = () => {
+    const savedImage = localStorage.getItem("ecgImage");
+    const resultImg = document.getElementById("resultImage");
+    if (savedImage && resultImg) {
+        resultImg.src = savedImage;
+    }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+tf_env/
+venv/
+__pycache__/
+uploads/
